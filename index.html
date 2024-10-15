@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Dash</title>
+    <style>
+        /* Basic styling for the game area */
+        body {
+            margin: 0;
+            overflow: hidden; /* Prevents scrolling */
+            background-color: #000; /* Black background */
+        }
+        #game {
+            position: relative; /* For positioning child elements */
+            width: 100vw; /* Full viewport width */
+            height: 100vh; /* Full viewport height */
+            background-color: #2b2b2b; /* Dark gray background */
+        }
+        #player {
+            position: absolute; /* Allows for positioning */
+            width: 30px; /* Player width */
+            height: 30px; /* Player height */
+            background-color: #ff0000; /* Red player */
+            bottom: 0; /* Start at the bottom */
+            left: 50px; /* Start position from the left */
+        }
+        .obstacle {
+            position: absolute; /* For positioning obstacles */
+            width: 30px; /* Obstacle width */
+            height: 100px; /* Obstacle height */
+            background-color: #00ff00; /* Green obstacle */
+            bottom: 0; /* Align to the bottom */
+        }
+    </style>
+</head>
+<body>
+    <div id="game"> <!-- Main game area -->
+        <div id="player"></div> <!-- Player object -->
+    </div>
+    <script>
+        // Basic game setup
+        const game = document.getElementById('game');
+        const player = document.getElementById('player');
+        let isJumping = false; // Jump state
+        let playerBottom = 0; // Player position from bottom
+
+        // Create obstacles at random intervals
+        setInterval(() => {
+            const obstacle = document.createElement('div'); // Create obstacle
+            obstacle.classList.add('obstacle');
+            obstacle.style.left = '100vw'; // Start from the right
+            game.appendChild(obstacle);
+            moveObstacle(obstacle); // Move the obstacle
+        }, 2000); // Every 2 seconds
+
+        // Move the obstacle across the screen
+        function moveObstacle(obstacle) {
+            let obstacleLeft = 100; // Start from right edge
+            const obstacleInterval = setInterval(() => {
+                if (obstacleLeft < -5) { // Remove obstacle when off screen
+                    clearInterval(obstacleInterval);
+                    game.removeChild(obstacle);
+                } else {
+                    obstacleLeft -= 2; // Move left
+                    obstacle.style.left = obstacleLeft + 'vw'; // Update position
+                    checkCollision(obstacle); // Check for collisions
+                }
+            }, 20); // Update every 20 ms
+        }
+
+        // Check for collision with player
+        function checkCollision(obstacle) {
+            const obstacleRect = obstacle.getBoundingClientRect();
+            const playerRect = player.getBoundingClientRect();
+            // If player hits the obstacle
+            if (obstacleRect.left < playerRect.right &&
+                obstacleRect.right > playerRect.left &&
+                obstacleRect.top < playerRect.bottom &&
+                obstacleRect.bottom > playerRect.top) {
+                alert('Game Over!'); // Alert on collision
+                window.location.reload(); // Reload the game
+            }
+        }
+
+        // Jumping mechanics
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ' && !isJumping) { // Jump on space key
+                isJumping = true;
+                jump(); // Call jump function
+            }
+        });
+
+        function jump() {
+            let jumpHeight = 0; // Reset jump height
+            const jumpInterval = setInterval(() => {
+                if (jumpHeight >= 100) { // Jump max height
+                    clearInterval(jumpInterval); // Stop jump
+                    fall(); // Call fall function
+                } else {
+                    jumpHeight += 5; // Increase height
+                    player.style.bottom = (playerBottom + jumpHeight) + 'px'; // Update player position
+                }
+            }, 20); // Jump update
+        }
+
+        function fall() {
+            const fallInterval = setInterval(() => {
+                if (playerBottom <= 0) { // Stop at ground level
+                    clearInterval(fallInterval); // Stop falling
+                    isJumping = false; // Reset jump state
+                } else {
+                    playerBottom -= 5; // Fall speed
+                    player.style.bottom = playerBottom + 'px'; // Update position
+                }
+            }, 20); // Fall update
+        }
+    </script>
+</body>
+</html>
