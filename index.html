@@ -72,6 +72,7 @@
         const startButton = document.getElementById('start-button');
         let isJumping = false; // Jump state
         let playerBottom = 0; // Player position from bottom
+        let jumpHeight = 0; // Variable to control jump height
 
         // Start game function
         function startGame() {
@@ -88,7 +89,7 @@
                 obstacle.style.left = '100vw'; // Start from the right
                 game.appendChild(obstacle);
                 moveObstacle(obstacle); // Move the obstacle
-            }, 2000); // Every 2 seconds
+            }, 3000); // Every 3 seconds (slowed down)
         }
 
         // Move the obstacle across the screen
@@ -99,7 +100,7 @@
                     clearInterval(obstacleInterval);
                     game.removeChild(obstacle);
                 } else {
-                    obstacleLeft -= 2; // Move left
+                    obstacleLeft -= 1; // Move left slower
                     obstacle.style.left = obstacleLeft + 'vw'; // Update position
                     checkCollision(obstacle); // Check for collisions
                 }
@@ -137,9 +138,9 @@
         });
 
         function jump() {
-            let jumpHeight = 0; // Reset jump height
+            jumpHeight = 0; // Reset jump height
             const jumpInterval = setInterval(() => {
-                if (jumpHeight >= 100) { // Jump max height
+                if (jumpHeight >= 150) { // Increase jump max height
                     clearInterval(jumpInterval); // Stop jump
                     fall(); // Call fall function
                 } else {
