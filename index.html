@@ -9,13 +9,13 @@
         body {
             margin: 0;
             overflow: hidden; /* Prevents scrolling */
-            background-color: #000; /* Black background */
         }
         #game {
             position: relative; /* For positioning child elements */
             width: 100vw; /* Full viewport width */
             height: 100vh; /* Full viewport height */
-            background-color: #2b2b2b; /* Dark gray background */
+            background-image: url('images/bg.png'); /* Set background image */
+            background-size: cover; /* Cover the entire game area */
         }
         #player {
             position: absolute; /* Allows for positioning */
@@ -32,27 +32,64 @@
             background-color: #00ff00; /* Green obstacle */
             bottom: 0; /* Align to the bottom */
         }
+        #start-screen {
+            position: absolute; /* Center the start screen */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white; /* White text */
+            font-size: 2em; /* Large font size */
+            text-align: center; /* Centered text */
+            display: flex;
+            flex-direction: column; /* Column layout */
+            align-items: center; /* Center items */
+            z-index: 10; /* On top of game elements */
+        }
+        #start-button {
+            padding: 10px 20px; /* Button padding */
+            font-size: 1em; /* Button font size */
+            background-color: #007bff; /* Blue background */
+            color: white; /* White text */
+            border: none; /* No border */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Pointer cursor */
+        }
     </style>
 </head>
 <body>
-    <div id="game"> <!-- Main game area -->
+    <div id="game" style="display: none;"> <!-- Main game area (hidden by default) -->
         <div id="player"></div> <!-- Player object -->
+    </div>
+    <div id="start-screen"> <!-- Start screen -->
+        <h1>Welcome to HTML Dash!</h1>
+        <button id="start-button">Start Game</button>
     </div>
     <script>
         // Basic game setup
         const game = document.getElementById('game');
         const player = document.getElementById('player');
+        const startScreen = document.getElementById('start-screen');
+        const startButton = document.getElementById('start-button');
         let isJumping = false; // Jump state
         let playerBottom = 0; // Player position from bottom
 
+        // Start game function
+        function startGame() {
+            startScreen.style.display = 'none'; // Hide start screen
+            game.style.display = 'block'; // Show game area
+            createObstacles(); // Start creating obstacles
+        }
+
         // Create obstacles at random intervals
-        setInterval(() => {
-            const obstacle = document.createElement('div'); // Create obstacle
-            obstacle.classList.add('obstacle');
-            obstacle.style.left = '100vw'; // Start from the right
-            game.appendChild(obstacle);
-            moveObstacle(obstacle); // Move the obstacle
-        }, 2000); // Every 2 seconds
+        function createObstacles() {
+            setInterval(() => {
+                const obstacle = document.createElement('div'); // Create obstacle
+                obstacle.classList.add('obstacle');
+                obstacle.style.left = '100vw'; // Start from the right
+                game.appendChild(obstacle);
+                moveObstacle(obstacle); // Move the obstacle
+            }, 2000); // Every 2 seconds
+        }
 
         // Move the obstacle across the screen
         function moveObstacle(obstacle) {
@@ -91,6 +128,14 @@
             }
         });
 
+        // Mobile touch controls
+        document.addEventListener('touchstart', (e) => {
+            if (!isJumping) { // Jump on touch
+                isJumping = true;
+                jump(); // Call jump function
+            }
+        });
+
         function jump() {
             let jumpHeight = 0; // Reset jump height
             const jumpInterval = setInterval(() => {
@@ -115,6 +160,9 @@
                 }
             }, 20); // Fall update
         }
+
+        // Event listener for the start button
+        startButton.addEventListener('click', startGame); // Start the game on button click
     </script>
 </body>
 </html>
